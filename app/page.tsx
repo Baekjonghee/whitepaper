@@ -10,11 +10,10 @@ export default function HomePage() {
             Daily Bible Meditation
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-5xl">
-            오늘의 말씀으로 하루를 시작하세요
+            오늘의 말씀으로 하루를 시작
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
-            매일 한 구절의 말씀과 묵상 질문을 카드 형태로 보여주는 반응형 웹앱입니다.
-            복잡한 가입 없이, 오늘의 말씀을 바로 보고 저장할 수 있습니다.
+            말씀을 묵상하고 기도제목을 나눠요.
           </p>
         </div>
 
