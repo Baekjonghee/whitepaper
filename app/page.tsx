@@ -37,32 +37,6 @@ export default function HomePage() {
       <section className="mt-8">
         <TodayVersePanel compact />
       </section>
-
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl bg-white/75 p-6 shadow-sm backdrop-blur-sm">
-          <p className="text-sm font-semibold text-amber-900">핵심 기능 1</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">오늘의 말씀 표시</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            날짜 기준으로 오늘의 말씀을 자동 선택하여 첫 화면에서 바로 보여줍니다.
-          </p>
-        </div>
-
-        <div className="rounded-3xl bg-white/75 p-6 shadow-sm backdrop-blur-sm">
-          <p className="text-sm font-semibold text-amber-900">핵심 기능 2</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">자연 배경 말씀 카드</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            아침 분위기의 자연 배경 위에 말씀과 묵상 질문을 카드 UI로 제공합니다.
-          </p>
-        </div>
-
-        <div className="rounded-3xl bg-white/75 p-6 shadow-sm backdrop-blur-sm">
-          <p className="text-sm font-semibold text-amber-900">핵심 기능 3</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">모바일 반응형</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            모바일 세로 화면에서도 카드와 버튼이 자연스럽게 보이도록 구성했습니다.
-          </p>
-        </div>
-      </section>
     </main>
   );
 }
