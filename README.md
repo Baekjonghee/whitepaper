@@ -44,3 +44,6 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 - 푸시/알림 기능
 - 묵상 기록 저장 API 연동
 - 작성/조회 권한 제어
+
+## Deployment Note
+- Trigger production redeploy.
