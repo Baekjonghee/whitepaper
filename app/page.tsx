@@ -4,6 +4,9 @@ import RecentVerseList from '@/components/recent-verse-list';
 import TodayVersePanel from '@/components/today-verse-panel';
 import { getTodayDateKey } from '@/lib/daily-verse';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function HomePage() {
   const todayDateKey = getTodayDateKey();
 

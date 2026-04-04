@@ -6,6 +6,9 @@ import ScriptureCard from '@/components/scripture-card';
 import { formatDateKey, getVerseForDateKey, isValidDateKey } from '@/lib/daily-verse';
 import { getVerseBackgroundByDateKey } from '@/lib/verse-backgrounds';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type VerseDetailPageProps = {
   params: Promise<{
     date: string;
