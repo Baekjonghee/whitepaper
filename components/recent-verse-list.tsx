@@ -32,7 +32,7 @@ export default function RecentVerseList() {
                 <div>
                   <p className="text-xs font-semibold text-amber-900">{item.dateLabel}</p>
                   <p className="mt-1 text-sm font-semibold text-slate-900">
-                    {item.verse.topic} · {item.verse.reference}
+                    {item.verse.reference}
                   </p>
                 </div>
                 <span className="text-xs font-semibold text-slate-500">상세 보기</span>

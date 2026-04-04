@@ -37,9 +37,6 @@ export default function ScriptureCard({
           <p className="mt-2 text-sm text-slate-600">{dateLabel}</p>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <span className="inline-flex rounded-full bg-white/75 px-3 py-1 text-sm font-semibold text-slate-800 shadow-sm">
-              {verse.topic}
-            </span>
             <span className="inline-flex rounded-full bg-white/75 px-3 py-1 text-sm font-semibold text-amber-900 shadow-sm">
               {verse.reference}
             </span>
@@ -59,7 +56,6 @@ export default function ScriptureCard({
             <p className="text-sm">
               가족과 함께 오늘의 말씀을 나누고 기도제목 또는 감사나눔을 남겨보세요.
             </p>
-            <p className="text-xs">배경 · {background.providerLabel}</p>
           </div>
           {actions}
         </div>
