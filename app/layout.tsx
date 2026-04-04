@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import SiteFooter from '@/components/site-footer';
 import './globals.css';
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '매일 성경 묵상';
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '말씀나눔';
 
 export const metadata: Metadata = {
   title: `${appName} | 오늘의 말씀`,
-  description: '오늘의 말씀과 묵상 카드를 보여주는 반응형 웹서비스',
+  description: '같은 말씀을 함께 묵상하고 기도제목과 감사나눔을 남기는 웹앱',
+  applicationName: appName,
 };
 
 export default function RootLayout({

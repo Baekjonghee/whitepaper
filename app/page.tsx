@@ -11,14 +11,14 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold tracking-[0.18em] text-amber-900 uppercase">
-            Daily Bible Meditation
+          <p className="text-sm font-semibold tracking-[0.08em] text-amber-900">
+            말씀나눔
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-5xl">
             오늘의 말씀으로 하루를 시작
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
-            말씀을 묵상하고 기도제목을 나눠요.
+            같은 말씀을 함께 묵상하고 기도제목과 감사나눔을 남겨요.
           </p>
         </div>
 

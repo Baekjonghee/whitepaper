@@ -29,8 +29,8 @@ export default async function VerseDetailPage({
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold tracking-[0.18em] text-amber-900 uppercase">
-            Verse Detail
+          <p className="text-sm font-semibold tracking-[0.08em] text-amber-900">
+            말씀나눔
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">
             지난 말씀 상세
