@@ -1,7 +1,12 @@
 import Link from 'next/link';
+import FamilyFeedSection from '@/components/family-feed-section';
+import RecentVerseList from '@/components/recent-verse-list';
 import TodayVersePanel from '@/components/today-verse-panel';
+import { getTodayDateKey } from '@/lib/daily-verse';
 
 export default function CardPage() {
+  const todayDateKey = getTodayDateKey();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -22,7 +27,15 @@ export default function CardPage() {
         </Link>
       </div>
 
-      <TodayVersePanel />
+      <TodayVersePanel showCardLink={false} />
+
+      <section className="mt-8">
+        <FamilyFeedSection dateKey={todayDateKey} />
+      </section>
+
+      <section className="mt-8">
+        <RecentVerseList />
+      </section>
     </main>
   );
 }

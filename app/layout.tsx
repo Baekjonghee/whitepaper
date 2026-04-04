@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import SiteFooter from '@/components/site-footer';
 import './globals.css';
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '매일 성경 묵상';
@@ -15,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

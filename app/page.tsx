@@ -1,7 +1,12 @@
 import Link from 'next/link';
+import FamilyFeedSection from '@/components/family-feed-section';
+import RecentVerseList from '@/components/recent-verse-list';
 import TodayVersePanel from '@/components/today-verse-panel';
+import { getTodayDateKey } from '@/lib/daily-verse';
 
 export default function HomePage() {
+  const todayDateKey = getTodayDateKey();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -35,6 +40,14 @@ export default function HomePage() {
 
       <section className="mt-8">
         <TodayVersePanel compact />
+      </section>
+
+      <section className="mt-8">
+        <FamilyFeedSection dateKey={todayDateKey} />
+      </section>
+
+      <section className="mt-8">
+        <RecentVerseList />
       </section>
     </main>
   );
