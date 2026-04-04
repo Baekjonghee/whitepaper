@@ -1,4 +1,4 @@
-import { getSeoulDateKey, getTodayDateKey, parseDateKey } from '@/lib/daily-verse';
+import { APP_LAUNCH_DATE_KEY, getTodayDateKey } from '@/lib/daily-verse';
 
 export const FAMILY_AUTHORS = [
   '아셀(첫째)',
@@ -19,50 +19,44 @@ export type FamilyFeedItem = {
 };
 
 export const FAMILY_FEED_STORAGE_KEY = 'daily-bible-meditation:family-feed';
+export const FAMILY_FEED_VERSION_KEY = 'daily-bible-meditation:family-feed-version';
+export const FAMILY_FEED_RESET_VERSION = '2026-04-04-initial-reset';
 export const FAMILY_FEED_MAX_LENGTH = 70;
-
-const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
 type FamilyFeedStore = Record<string, FamilyFeedItem[]>;
 
-function buildSeedItem(
-  dateKey: string,
-  author: FamilyAuthor,
-  content: string,
-  hour: number,
-  minute: number,
-): FamilyFeedItem {
-  const paddedHour = String(hour).padStart(2, '0');
-  const paddedMinute = String(minute).padStart(2, '0');
-
-  return {
-    id: `seed-${dateKey}-${paddedHour}${paddedMinute}-${author}`,
-    dateKey,
-    author,
-    content,
-    createdAt: new Date(`${dateKey}T${paddedHour}:${paddedMinute}:00+09:00`).toISOString(),
-  };
+function getEmptyStore(): FamilyFeedStore {
+  return {};
 }
 
-function getSeedStore(): FamilyFeedStore {
-  const todayKey = getTodayDateKey();
-  const baseDate = parseDateKey(todayKey);
-  const yesterdayKey = getSeoulDateKey(new Date(baseDate.getTime() - ONE_DAY_MS));
-  const twoDaysAgoKey = getSeoulDateKey(new Date(baseDate.getTime() - ONE_DAY_MS * 2));
+function writeStore(store: FamilyFeedStore) {
+  window.localStorage.setItem(FAMILY_FEED_STORAGE_KEY, JSON.stringify(store));
+}
 
-  return {
-    [todayKey]: [
-      buildSeedItem(todayKey, '엄마', '작은 일에도 감사하는 하루가 되길 기도해요.', 7, 42),
-      buildSeedItem(todayKey, '아빠', '오늘 말씀 붙들고 우리 가족이 서로 격려하게 해주세요.', 7, 18),
-    ],
-    [yesterdayKey]: [
-      buildSeedItem(yesterdayKey, '아셀(첫째)', '학교에서도 말씀을 기억하고 싶어요.', 20, 11),
-      buildSeedItem(yesterdayKey, '이삭(둘째)', '친구들과 잘 지내게 해주셔서 감사해요.', 19, 24),
-    ],
-    [twoDaysAgoKey]: [
-      buildSeedItem(twoDaysAgoKey, '조이(셋째)', '우리 가족 모두 건강하게 지켜주세요.', 20, 5),
-    ],
-  };
+function normalizeStore(store: FamilyFeedStore): FamilyFeedStore {
+  const todayDateKey = getTodayDateKey();
+  const normalizedEntries = Object.entries(store).filter(([dateKey, items]) => {
+    return (
+      dateKey >= APP_LAUNCH_DATE_KEY &&
+      dateKey <= todayDateKey &&
+      Array.isArray(items)
+    );
+  });
+
+  return Object.fromEntries(normalizedEntries);
+}
+
+function ensureResetVersion(): FamilyFeedStore | null {
+  const version = window.localStorage.getItem(FAMILY_FEED_VERSION_KEY);
+
+  if (version === FAMILY_FEED_RESET_VERSION) {
+    return null;
+  }
+
+  const emptyStore = getEmptyStore();
+  window.localStorage.setItem(FAMILY_FEED_VERSION_KEY, FAMILY_FEED_RESET_VERSION);
+  writeStore(emptyStore);
+  return emptyStore;
 }
 
 function readStore(): FamilyFeedStore {
@@ -70,31 +64,39 @@ function readStore(): FamilyFeedStore {
     return {};
   }
 
+  const resetStore = ensureResetVersion();
+
+  if (resetStore) {
+    return resetStore;
+  }
+
   const raw = window.localStorage.getItem(FAMILY_FEED_STORAGE_KEY);
 
   if (!raw) {
-    const seedStore = getSeedStore();
-    window.localStorage.setItem(FAMILY_FEED_STORAGE_KEY, JSON.stringify(seedStore));
-    return seedStore;
+    const emptyStore = getEmptyStore();
+    writeStore(emptyStore);
+    return emptyStore;
   }
 
   try {
     const parsed = JSON.parse(raw) as FamilyFeedStore;
 
     if (parsed && typeof parsed === 'object') {
-      return parsed;
+      const normalizedStore = normalizeStore(parsed);
+
+      if (JSON.stringify(parsed) !== JSON.stringify(normalizedStore)) {
+        writeStore(normalizedStore);
+      }
+
+      return normalizedStore;
     }
   } catch {
-    // ignore parse error and fall back to seed
+    // ignore parse error and fall back to empty store
   }
 
-  const seedStore = getSeedStore();
-  window.localStorage.setItem(FAMILY_FEED_STORAGE_KEY, JSON.stringify(seedStore));
-  return seedStore;
-}
-
-function writeStore(store: FamilyFeedStore) {
-  window.localStorage.setItem(FAMILY_FEED_STORAGE_KEY, JSON.stringify(store));
+  const emptyStore = getEmptyStore();
+  writeStore(emptyStore);
+  return emptyStore;
 }
 
 function createFeedId() {

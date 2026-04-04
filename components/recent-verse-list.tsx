@@ -16,30 +16,36 @@ export default function RecentVerseList() {
         </p>
       </div>
 
-      <div className="mt-5 grid gap-3">
-        {verseItems.map((item) => (
-          <Link
-            key={item.dateKey}
-            href={`/verses/${item.dateKey}`}
-            className="rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-200"
-          >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold text-amber-900">{item.dateLabel}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">
-                  {item.verse.topic} · {item.verse.reference}
-                </p>
+      {verseItems.length === 0 ? (
+        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-6 text-center text-sm leading-6 text-slate-600">
+          아직 지난 말씀 기록이 없습니다. 오늘부터 가족과 함께 말씀을 쌓아가세요.
+        </div>
+      ) : (
+        <div className="mt-5 grid gap-3">
+          {verseItems.map((item) => (
+            <Link
+              key={item.dateKey}
+              href={`/verses/${item.dateKey}`}
+              className="rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-200"
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-amber-900">{item.dateLabel}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {item.verse.topic} · {item.verse.reference}
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-slate-500">상세 보기</span>
               </div>
-              <span className="text-xs font-semibold text-slate-500">상세 보기</span>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-slate-700">
-              {item.verse.text.length > 84
-                ? `${item.verse.text.slice(0, 84)}...`
-                : item.verse.text}
-            </p>
-          </Link>
-        ))}
-      </div>
+              <p className="mt-3 text-sm leading-6 text-slate-700">
+                {item.verse.text.length > 84
+                  ? `${item.verse.text.slice(0, 84)}...`
+                  : item.verse.text}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

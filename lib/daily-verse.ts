@@ -2,6 +2,8 @@ import { VERSES, type Verse } from '@/lib/verses';
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
+export const APP_LAUNCH_DATE_KEY = '2026-04-04';
+
 export function getSeoulDateKey(date: Date = new Date()): string {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul',
@@ -33,7 +35,14 @@ export function isValidDateKey(dateKey: string): boolean {
     return false;
   }
 
-  return getSeoulDateKey(date) === dateKey;
+  const normalizedDateKey = getSeoulDateKey(date);
+  const todayDateKey = getTodayDateKey();
+
+  return (
+    normalizedDateKey === dateKey &&
+    dateKey >= APP_LAUNCH_DATE_KEY &&
+    dateKey <= todayDateKey
+  );
 }
 
 function hashString(value: string): number {
@@ -73,10 +82,14 @@ export function getPastVerseSummaries(days: number = 7) {
     const targetDate = new Date(todayDate.getTime() - (index + 1) * ONE_DAY_MS);
     const dateKey = getSeoulDateKey(targetDate);
 
+    if (dateKey < APP_LAUNCH_DATE_KEY) {
+      return null;
+    }
+
     return {
       dateKey,
       dateLabel: formatDateKey(dateKey),
       verse: getVerseForDateKey(dateKey),
     };
-  });
+  }).filter((item): item is NonNullable<typeof item> => item !== null);
 }
