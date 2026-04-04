@@ -1,8 +1,15 @@
 import Link from 'next/link';
 import { getPastVerseSummaries } from '@/lib/daily-verse';
 
-export default function RecentVerseList() {
-  const verseItems = getPastVerseSummaries(7);
+function buildPreviewText(text: string) {
+  const normalizedText = text.replace(/\s+/g, ' ').trim();
+  return normalizedText.length > 84
+    ? `${normalizedText.slice(0, 84)}...`
+    : normalizedText;
+}
+
+export default async function RecentVerseList() {
+  const verseItems = await getPastVerseSummaries(7);
 
   return (
     <section className="rounded-3xl border border-white/60 bg-white/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
@@ -38,9 +45,7 @@ export default function RecentVerseList() {
                 <span className="text-xs font-semibold text-slate-500">상세 보기</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-700">
-                {item.verse.text.length > 84
-                  ? `${item.verse.text.slice(0, 84)}...`
-                  : item.verse.text}
+                {buildPreviewText(item.verse.text)}
               </p>
             </Link>
           ))}

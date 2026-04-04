@@ -29,8 +29,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 ## Supabase 설정
 1. Supabase 프로젝트 생성
 2. SQL Editor에서 `supabase/schema.sql` 실행
-3. `.env.local`에 URL / Service Role Key 입력
-4. `npm run dev` 실행
+3. SQL Editor에서 오늘의 말씀 seed SQL 실행
+4. `.env.local`에 URL / Service Role Key 입력
+5. `npm run dev` 실행
 
 ## 주요 화면
 - 홈 화면
@@ -40,6 +41,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 - 지난 말씀 상세 화면
 
 ## 다음 확장 아이디어
+- 대한성서공회 본문 읽기 링크 연결
 - Pixabay API 서버 캐시 연동
 - 푸시/알림 기능
 - 묵상 기록 저장 API 연동

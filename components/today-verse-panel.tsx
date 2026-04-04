@@ -1,7 +1,4 @@
-'use client';
-
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
 import FavoriteToggleButton from '@/components/favorite-toggle-button';
 import ScriptureCard from '@/components/scripture-card';
 import { formatDateKey, getTodayDateKey, getVerseForDateKey } from '@/lib/daily-verse';
@@ -12,45 +9,14 @@ type TodayVersePanelProps = {
   showCardLink?: boolean;
 };
 
-export default function TodayVersePanel({
+export default async function TodayVersePanel({
   compact = false,
   showCardLink = true,
 }: TodayVersePanelProps) {
-  const [todayDateKey, setTodayDateKey] = useState('');
-
-  useEffect(() => {
-    setTodayDateKey(getTodayDateKey());
-  }, []);
-
-  const verse = useMemo(() => {
-    if (!todayDateKey) {
-      return null;
-    }
-
-    return getVerseForDateKey(todayDateKey);
-  }, [todayDateKey]);
-
-  const background = useMemo(() => {
-    if (!todayDateKey) {
-      return null;
-    }
-
-    return getVerseBackgroundByDateKey(todayDateKey);
-  }, [todayDateKey]);
-
-  const dateLabel = useMemo(() => {
-    if (!todayDateKey) {
-      return '';
-    }
-
-    return formatDateKey(todayDateKey);
-  }, [todayDateKey]);
-
-  if (!verse || !background) {
-    return (
-      <div className="min-h-[360px] animate-pulse rounded-[32px] border border-white/50 bg-white/40" />
-    );
-  }
+  const todayDateKey = getTodayDateKey();
+  const verse = await getVerseForDateKey(todayDateKey);
+  const background = getVerseBackgroundByDateKey(todayDateKey);
+  const dateLabel = formatDateKey(todayDateKey);
 
   return (
     <ScriptureCard

@@ -21,7 +21,7 @@ export default async function VerseDetailPage({
     notFound();
   }
 
-  const verse = getVerseForDateKey(date);
+  const verse = await getVerseForDateKey(date);
   const background = getVerseBackgroundByDateKey(date);
   const dateLabel = formatDateKey(date);
 

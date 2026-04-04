@@ -1,4 +1,5 @@
-import { VERSES, type Verse } from '@/lib/verses';
+import { type Verse } from '@/lib/verses';
+import { getAllDailyVerses } from '@/lib/verse-repository';
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
@@ -55,13 +56,18 @@ function hashString(value: string): number {
   return hash;
 }
 
+function pickVerse(dateKey: string, verses: Verse[]): Verse {
+  const verseIndex = hashString(dateKey) % verses.length;
+  return verses[verseIndex]!;
+}
+
 export function getTodayDateKey(date: Date = new Date()): string {
   return getSeoulDateKey(date);
 }
 
-export function getVerseForDateKey(dateKey: string): Verse {
-  const verseIndex = hashString(dateKey) % VERSES.length;
-  return VERSES[verseIndex]!;
+export async function getVerseForDateKey(dateKey: string): Promise<Verse> {
+  const verses = await getAllDailyVerses();
+  return pickVerse(dateKey, verses);
 }
 
 export function formatDateKey(dateKey: string): string {
@@ -74,7 +80,8 @@ export function formatDateKey(dateKey: string): string {
   }).format(parseDateKey(dateKey));
 }
 
-export function getPastVerseSummaries(days: number = 7) {
+export async function getPastVerseSummaries(days: number = 7) {
+  const verses = await getAllDailyVerses();
   const todayKey = getTodayDateKey();
   const todayDate = parseDateKey(todayKey);
 
@@ -89,7 +96,7 @@ export function getPastVerseSummaries(days: number = 7) {
     return {
       dateKey,
       dateLabel: formatDateKey(dateKey),
-      verse: getVerseForDateKey(dateKey),
+      verse: pickVerse(dateKey, verses),
     };
   }).filter((item): item is NonNullable<typeof item> => item !== null);
 }
