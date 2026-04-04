@@ -4,9 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   FAMILY_AUTHORS,
   FAMILY_FEED_MAX_LENGTH,
-  addFamilyFeedItem,
   formatFamilyFeedTimestamp,
-  readFamilyFeedsByDate,
   type FamilyAuthor,
   type FamilyFeedItem,
 } from '@/lib/family-feed';
@@ -17,6 +15,23 @@ type FamilyFeedSectionProps = {
   title?: string;
 };
 
+async function fetchFamilyFeeds(dateKey: string) {
+  const response = await fetch(`/api/feeds?date=${dateKey}`, {
+    cache: 'no-store',
+  });
+
+  const payload = (await response.json()) as {
+    items?: FamilyFeedItem[];
+    message?: string;
+  };
+
+  if (!response.ok) {
+    throw new Error(payload.message ?? '가족 피드를 불러오지 못했습니다.');
+  }
+
+  return payload.items ?? [];
+}
+
 export default function FamilyFeedSection({
   dateKey,
   readOnly = false,
@@ -26,10 +41,42 @@ export default function FamilyFeedSection({
   const [author, setAuthor] = useState<FamilyAuthor | ''>('');
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setFeeds(readFamilyFeedsByDate(dateKey));
+    let ignore = false;
+
+    const loadFeeds = async () => {
+      setIsLoading(true);
+      setError('');
+
+      try {
+        const items = await fetchFamilyFeeds(dateKey);
+
+        if (!ignore) {
+          setFeeds(items);
+        }
+      } catch (loadError) {
+        if (!ignore) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : '가족 피드를 불러오지 못했습니다.',
+          );
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadFeeds();
+
+    return () => {
+      ignore = true;
+    };
   }, [dateKey]);
 
   const remainingLength = useMemo(
@@ -37,19 +84,34 @@ export default function FamilyFeedSection({
     [content.length],
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     setIsSubmitting(true);
 
     try {
-      const nextFeedItem = addFamilyFeedItem({
-        dateKey,
-        author: author as FamilyAuthor,
-        content,
+      const response = await fetch('/api/feeds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dateKey,
+          author,
+          content,
+        }),
       });
 
-      setFeeds((previous) => [nextFeedItem, ...previous]);
+      const payload = (await response.json()) as {
+        item?: FamilyFeedItem;
+        message?: string;
+      };
+
+      if (!response.ok || !payload.item) {
+        throw new Error(payload.message ?? '가족 피드를 저장하지 못했습니다.');
+      }
+
+      setFeeds((previous) => [payload.item as FamilyFeedItem, ...previous]);
       setAuthor('');
       setContent('');
     } catch (submitError) {
@@ -109,7 +171,7 @@ export default function FamilyFeedSection({
                 onChange={(event) => setContent(event.target.value)}
                 maxLength={FAMILY_FEED_MAX_LENGTH}
                 rows={3}
-                placeholder="예: 오늘 말씀 붙들고 우리 가족이 서로 격려하게 해주세요."
+                placeholder="예: 오늘 말씀 붙들고 서로 격려하게 해주세요."
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-amber-700"
               />
             </label>
@@ -133,7 +195,11 @@ export default function FamilyFeedSection({
       ) : null}
 
       <div className="mt-6 space-y-3">
-        {feeds.length === 0 ? (
+        {isLoading ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-6 text-center text-sm leading-6 text-slate-600">
+            가족 피드를 불러오는 중입니다...
+          </div>
+        ) : feeds.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-6 text-center text-sm leading-6 text-slate-600">
             {readOnly
               ? '이 날짜에는 아직 남겨진 가족 피드가 없습니다.'

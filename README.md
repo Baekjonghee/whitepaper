@@ -6,6 +6,7 @@
 - Next.js
 - TypeScript
 - Tailwind CSS
+- Supabase
 
 ## 시작 방법
 ```bash
@@ -16,6 +17,21 @@ npm run dev
 
 브라우저에서 `http://localhost:3000` 접속
 
+## 환경변수
+`.env.local`
+
+```bash
+NEXT_PUBLIC_APP_NAME=말씀나눔
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+```
+
+## Supabase 설정
+1. Supabase 프로젝트 생성
+2. SQL Editor에서 `supabase/schema.sql` 실행
+3. `.env.local`에 URL / Service Role Key 입력
+4. `npm run dev` 실행
+
 ## 주요 화면
 - 홈 화면
 - 오늘의 말씀 카드 화면
@@ -24,7 +40,7 @@ npm run dev
 - 지난 말씀 상세 화면
 
 ## 다음 확장 아이디어
-- Supabase/PostgreSQL 연동
 - Pixabay API 서버 캐시 연동
 - 푸시/알림 기능
 - 묵상 기록 저장 API 연동
+- 작성/조회 권한 제어
