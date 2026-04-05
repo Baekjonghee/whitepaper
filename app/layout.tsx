@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import SiteFooter from '@/components/site-footer';
+import SplashScreen from '@/components/splash-screen';
 import './globals.css';
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '말씀나눔';
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <SplashScreen />
         {children}
         <SiteFooter />
       </body>
