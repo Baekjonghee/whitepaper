@@ -1,5 +1,5 @@
 import { getSupabaseAdminClient } from '@/lib/supabase-admin';
-import { type Verse } from '@/lib/verses';
+import { VERSES, type Verse } from '@/lib/verses';
 
 type DailyVerseRow = {
   id: string;
@@ -20,19 +20,24 @@ function mapRowToVerse(row: DailyVerseRow): Verse {
 }
 
 export async function getAllDailyVerses(): Promise<Verse[]> {
-  const supabase = getSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from('daily_verses')
-    .select('id, sort_order, reference, text')
-    .order('sort_order', { ascending: true });
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('daily_verses')
+      .select('id, sort_order, reference, text')
+      .order('sort_order', { ascending: true });
 
-  if (error) {
-    throw error;
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error('daily_verses table is empty.');
+    }
+
+    return (data as DailyVerseRow[]).map((row) => mapRowToVerse(row));
+  } catch (error) {
+    console.error('[verse-repository] failed to load daily_verses, fallback to local verses', error);
+    return VERSES;
   }
-
-  if (!data || data.length === 0) {
-    throw new Error('daily_verses table is empty. Run the verse seed SQL first.');
-  }
-
-  return (data as DailyVerseRow[]).map((row) => mapRowToVerse(row));
 }
