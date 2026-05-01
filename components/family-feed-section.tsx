@@ -5,6 +5,7 @@ import {
   FAMILY_AUTHORS,
   FAMILY_FEED_MAX_LENGTH,
   formatFamilyFeedTimestamp,
+  validateFamilyFeedInput,
   type FamilyAuthor,
   type FamilyFeedItem,
 } from '@/lib/family-feed';
@@ -14,6 +15,67 @@ type FamilyFeedSectionProps = {
   readOnly?: boolean;
   title?: string;
 };
+
+type StorageMode = 'server' | 'local';
+
+const FALLBACK_STORAGE_KEY = 'family-feeds-fallback-v1';
+
+function canUseLocalStorage() {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+}
+
+function readLocalFeedStore(): FamilyFeedItem[] {
+  if (!canUseLocalStorage()) {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(FALLBACK_STORAGE_KEY);
+
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw) as FamilyFeedItem[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalFeedStore(items: FamilyFeedItem[]) {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+
+  window.localStorage.setItem(FALLBACK_STORAGE_KEY, JSON.stringify(items));
+}
+
+function getLocalFeedsByDate(dateKey: string) {
+  return readLocalFeedStore()
+    .filter((item) => item.dateKey === dateKey)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+function saveLocalFeed(input: {
+  dateKey: string;
+  author: string;
+  content: string;
+}): FamilyFeedItem {
+  const validated = validateFamilyFeedInput(input);
+  const nextItem: FamilyFeedItem = {
+    id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    dateKey: validated.dateKey,
+    author: validated.author,
+    content: validated.content,
+    createdAt: new Date().toISOString(),
+  };
+
+  const currentItems = readLocalFeedStore();
+  writeLocalFeedStore([nextItem, ...currentItems]);
+
+  return nextItem;
+}
 
 async function fetchFamilyFeeds(dateKey: string) {
   const response = await fetch(`/api/feeds?date=${dateKey}`, {
@@ -43,6 +105,7 @@ export default function FamilyFeedSection({
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [storageMode, setStorageMode] = useState<StorageMode>('server');
 
   useEffect(() => {
     let ignore = false;
@@ -56,13 +119,16 @@ export default function FamilyFeedSection({
 
         if (!ignore) {
           setFeeds(items);
+          setStorageMode('server');
         }
       } catch (loadError) {
         if (!ignore) {
+          setFeeds(getLocalFeedsByDate(dateKey));
+          setStorageMode('local');
           setError(
             loadError instanceof Error
-              ? loadError.message
-              : '가족 피드를 불러오지 못했습니다.',
+              ? `${loadError.message} 로컬 저장 모드로 전환합니다.`
+              : '가족 피드를 불러오지 못해 로컬 저장 모드로 전환합니다.',
           );
         }
       } finally {
@@ -112,14 +178,31 @@ export default function FamilyFeedSection({
       }
 
       setFeeds((previous) => [payload.item as FamilyFeedItem, ...previous]);
+      setStorageMode('server');
       setAuthor('');
       setContent('');
     } catch (submitError) {
-      setError(
-        submitError instanceof Error
-          ? submitError.message
-          : '가족 피드를 저장하지 못했습니다.',
-      );
+      try {
+        const localItem = saveLocalFeed({
+          dateKey,
+          author,
+          content,
+        });
+
+        setFeeds((previous) => [localItem, ...previous]);
+        setStorageMode('local');
+        setAuthor('');
+        setContent('');
+        setError('서버 저장이 불안정해 이 기기에 임시 저장했습니다.');
+      } catch (fallbackError) {
+        setError(
+          fallbackError instanceof Error
+            ? fallbackError.message
+            : submitError instanceof Error
+              ? submitError.message
+              : '가족 피드를 저장하지 못했습니다.',
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -138,6 +221,11 @@ export default function FamilyFeedSection({
               ? '선택한 날짜에 남긴 가족 나눔을 확인할 수 있습니다.'
               : '기도제목 또는 감사나눔을 70자 이내로 남겨보세요.'}
           </p>
+          {storageMode === 'local' ? (
+            <p className="mt-2 text-xs leading-6 text-amber-800">
+              현재 서버 연결이 불안정해 이 기기 저장소로 임시 동작 중입니다.
+            </p>
+          ) : null}
         </div>
 
         <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900">
