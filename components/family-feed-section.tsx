@@ -13,6 +13,7 @@ type FamilyFeedSectionProps = {
   dateKey: string;
   readOnly?: boolean;
   title?: string;
+  fixedComposer?: boolean;
 };
 
 async function fetchFamilyFeeds(dateKey: string) {
@@ -104,6 +105,7 @@ export default function FamilyFeedSection({
   dateKey,
   readOnly = false,
   title = '오늘의 감사 나눔',
+  fixedComposer = true,
 }: FamilyFeedSectionProps) {
   const [feeds, setFeeds] = useState<FamilyFeedItem[]>([]);
   const [author, setAuthor] = useState<FamilyAuthor | ''>('');
@@ -234,7 +236,7 @@ export default function FamilyFeedSection({
   };
 
   const handleDelete = async (feedId: string) => {
-    const confirmed = window.confirm('이 감사 나눔을 삭제할까요?');
+    const confirmed = window.confirm('이 나눔글을 삭제할까요?');
 
     if (!confirmed) {
       return;
@@ -261,184 +263,190 @@ export default function FamilyFeedSection({
     }
   };
 
+  const composer = !readOnly ? (
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <div className="flex items-center gap-2">
+        <select
+          value={author}
+          onChange={(event) => setAuthor(event.target.value as FamilyAuthor | '')}
+          className="h-10 min-w-[120px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+        >
+          <option value="">작성자</option>
+          {FAMILY_AUTHORS.map((member) => (
+            <option key={member} value={member}>
+              {member}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-end gap-2">
+        <textarea
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          maxLength={FAMILY_FEED_MAX_LENGTH}
+          rows={2}
+          placeholder="감사한 일이나 기도제목을 남겨보세요."
+          className="min-h-[72px] flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-violet-400"
+        />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-11 shrink-0 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSubmitting ? '저장 중...' : '올리기'}
+        </button>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 px-1 text-xs">
+        <div className="text-slate-500">남은 글자 수 · {remainingLength}</div>
+        <div className="flex items-center gap-3">
+          {error ? <span className="text-rose-600">{error}</span> : null}
+          <button
+            type="button"
+            onClick={handleReset}
+            className="font-medium text-slate-500"
+          >
+            취소
+          </button>
+        </div>
+      </div>
+    </form>
+  ) : null;
+
   return (
-    <section className="rounded-[28px] border border-slate-200/80 bg-[#f7f3fb] px-4 py-5 shadow-sm sm:px-6 sm:py-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
+    <>
+      <section className="rounded-[24px] border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+              {feeds.length}개
+            </span>
+          </div>
         </div>
 
-        <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-violet-700 shadow-sm">
-          {feeds.length}개
-        </span>
-      </div>
-
-      {!readOnly ? (
-        <form
-          className="mt-5 rounded-[24px] border border-violet-200/80 bg-white/90 p-3 shadow-sm"
-          onSubmit={handleSubmit}
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={author}
-              onChange={(event) => setAuthor(event.target.value as FamilyAuthor | '')}
-              className="min-w-[140px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-violet-400"
-            >
-              <option value="">작성자 선택</option>
-              {FAMILY_AUTHORS.map((member) => (
-                <option key={member} value={member}>
-                  {member}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mt-3">
-            <textarea
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              maxLength={FAMILY_FEED_MAX_LENGTH}
-              rows={2}
-              placeholder="감사한 일이나 기도제목을 남겨보세요."
-              className="w-full resize-none rounded-2xl border border-slate-200 bg-[#faf8fd] px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-violet-400"
-            />
-          </div>
-
-          <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-3 text-sm">
-              <span className="font-medium text-slate-500">{remainingLength}/{FAMILY_FEED_MAX_LENGTH}</span>
-              {error ? <span className="text-rose-600">{error}</span> : null}
+        <div className={`px-5 py-4 ${!readOnly && fixedComposer ? 'pb-28' : ''}`}>
+          {isLoading ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
+              나눔글을 불러오는 중입니다...
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="rounded-full bg-violet-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting ? '저장 중...' : '올리기'}
-              </button>
+          ) : feeds.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
+              {readOnly ? '이 날짜에는 아직 남겨진 나눔이 없습니다.' : '첫 나눔글을 남겨보세요.'}
             </div>
-          </div>
-        </form>
-      ) : null}
+          ) : (
+            <div className="space-y-3">
+              {feeds.map((feed) => {
+                const isEditing = editingId === feed.id;
 
-      <div className="mt-5 space-y-3">
-        {isLoading ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-6 text-center text-sm leading-6 text-slate-600">
-            감사 나눔을 불러오는 중입니다...
-          </div>
-        ) : feeds.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-6 text-center text-sm leading-6 text-slate-600">
-            {readOnly ? '이 날짜에는 아직 남겨진 나눔이 없습니다.' : '첫 감사 나눔을 남겨보세요.'}
-          </div>
-        ) : (
-          feeds.map((feed, index) => {
-            const isEditing = editingId === feed.id;
-
-            return (
-              <article
-                key={feed.id}
-                className="rounded-2xl border border-violet-100 bg-white px-4 py-4 shadow-sm"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">
-                      {index + 1}번째 감사
-                    </span>
-                    <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
-                      {feed.author}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">
-                      {formatFamilyFeedTimestamp(feed.createdAt)}
-                    </span>
-                    {!readOnly ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => startEditing(feed)}
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-violet-700 transition hover:bg-violet-50"
-                        >
-                          수정
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(feed.id)}
-                          disabled={deletingId === feed.id}
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 disabled:opacity-60"
-                        >
-                          {deletingId === feed.id ? '삭제 중...' : '삭제'}
-                        </button>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-
-                {isEditing ? (
-                  <div className="mt-3 rounded-2xl border border-slate-200 bg-[#faf8fd] p-3">
-                    <select
-                      value={editAuthor}
-                      onChange={(event) => setEditAuthor(event.target.value as FamilyAuthor | '')}
-                      className="min-w-[140px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-violet-400"
-                    >
-                      <option value="">작성자 선택</option>
-                      {FAMILY_AUTHORS.map((member) => (
-                        <option key={member} value={member}>
-                          {member}
-                        </option>
-                      ))}
-                    </select>
-
-                    <textarea
-                      value={editContent}
-                      onChange={(event) => setEditContent(event.target.value)}
-                      maxLength={FAMILY_FEED_MAX_LENGTH}
-                      rows={2}
-                      className="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-violet-400"
-                    />
-
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-slate-500">
-                        {editRemainingLength}/{FAMILY_FEED_MAX_LENGTH}
-                      </span>
-
+                return (
+                  <article
+                    key={feed.id}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={cancelEditing}
-                          className="rounded-full px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100"
-                        >
-                          취소
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdate(feed.id)}
-                          disabled={isUpdating}
-                          className="rounded-full bg-violet-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {isUpdating ? '저장 중...' : '저장'}
-                        </button>
+                        <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                          {feed.author}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          {formatFamilyFeedTimestamp(feed.createdAt)}
+                        </span>
                       </div>
+
+                      {!readOnly ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEditing(feed)}
+                            className="text-xs font-semibold text-violet-700"
+                          >
+                            수정
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(feed.id)}
+                            disabled={deletingId === feed.id}
+                            className="text-xs font-semibold text-rose-600 disabled:opacity-60"
+                          >
+                            {deletingId === feed.id ? '삭제 중...' : '삭제'}
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
-                  </div>
-                ) : (
-                  <p className="mt-3 text-sm leading-7 text-slate-800">{feed.content}</p>
-                )}
-              </article>
-            );
-          })
-        )}
-      </div>
-    </section>
+
+                    {isEditing ? (
+                      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
+                        <select
+                          value={editAuthor}
+                          onChange={(event) =>
+                            setEditAuthor(event.target.value as FamilyAuthor | '')
+                          }
+                          className="h-10 min-w-[120px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+                        >
+                          <option value="">작성자</option>
+                          {FAMILY_AUTHORS.map((member) => (
+                            <option key={member} value={member}>
+                              {member}
+                            </option>
+                          ))}
+                        </select>
+
+                        <textarea
+                          value={editContent}
+                          onChange={(event) => setEditContent(event.target.value)}
+                          maxLength={FAMILY_FEED_MAX_LENGTH}
+                          rows={2}
+                          className="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-violet-400"
+                        />
+
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          <span className="text-xs text-slate-500">
+                            남은 글자 수 · {editRemainingLength}
+                          </span>
+
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={cancelEditing}
+                              className="text-sm font-medium text-slate-500"
+                            >
+                              취소
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleUpdate(feed.id)}
+                              disabled={isUpdating}
+                              className="rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                            >
+                              {isUpdating ? '저장 중...' : '저장'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-800">
+                        {feed.content}
+                      </p>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+
+          {!readOnly && !fixedComposer ? <div className="mt-4">{composer}</div> : null}
+        </div>
+      </section>
+
+      {!readOnly && fixedComposer ? (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur">
+          <div className="mx-auto w-full max-w-3xl px-4 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3">
+            {composer}
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
