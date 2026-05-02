@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 const tabs = [
   { href: '/', label: '오늘' },
   { href: '/archive', label: '기록' },
-  { href: '/favorites', label: '저장' },
 ];
 
 function isActive(pathname: string, href: string) {

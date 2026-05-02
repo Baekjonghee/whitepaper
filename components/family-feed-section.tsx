@@ -265,11 +265,11 @@ export default function FamilyFeedSection({
 
   const composer = !readOnly ? (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-end gap-2">
         <select
           value={author}
           onChange={(event) => setAuthor(event.target.value as FamilyAuthor | '')}
-          className="h-10 min-w-[120px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+          className="h-11 min-w-[96px] rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
         >
           <option value="">작성자</option>
           {FAMILY_AUTHORS.map((member) => (
@@ -278,17 +278,16 @@ export default function FamilyFeedSection({
             </option>
           ))}
         </select>
-      </div>
 
-      <div className="flex items-end gap-2">
         <textarea
           value={content}
           onChange={(event) => setContent(event.target.value)}
           maxLength={FAMILY_FEED_MAX_LENGTH}
-          rows={2}
+          rows={1}
           placeholder="감사한 일이나 기도제목을 남겨보세요."
-          className="min-h-[72px] flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-violet-400"
+          className="h-11 min-h-[44px] flex-1 resize-none rounded-full border border-slate-200 bg-white px-4 py-3 text-sm leading-5 text-slate-900 outline-none focus:border-violet-400"
         />
+
         <button
           type="submit"
           disabled={isSubmitting}
@@ -299,7 +298,7 @@ export default function FamilyFeedSection({
       </div>
 
       <div className="flex items-center justify-between gap-3 px-1 text-xs">
-        <div className="text-slate-500">남은 글자 수 · {remainingLength}</div>
+        <div className="text-slate-500">{remainingLength}</div>
         <div className="flex items-center gap-3">
           {error ? <span className="text-rose-600">{error}</span> : null}
           <button
@@ -326,7 +325,7 @@ export default function FamilyFeedSection({
           </div>
         </div>
 
-        <div className={`px-5 py-4 ${!readOnly && fixedComposer ? 'pb-28' : ''}`}>
+        <div className={`px-5 py-4 ${!readOnly && fixedComposer ? 'pb-24' : ''}`}>
           {isLoading ? (
             <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
               나눔글을 불러오는 중입니다...
@@ -378,33 +377,33 @@ export default function FamilyFeedSection({
 
                     {isEditing ? (
                       <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
-                        <select
-                          value={editAuthor}
-                          onChange={(event) =>
-                            setEditAuthor(event.target.value as FamilyAuthor | '')
-                          }
-                          className="h-10 min-w-[120px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
-                        >
-                          <option value="">작성자</option>
-                          {FAMILY_AUTHORS.map((member) => (
-                            <option key={member} value={member}>
-                              {member}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex items-end gap-2">
+                          <select
+                            value={editAuthor}
+                            onChange={(event) =>
+                              setEditAuthor(event.target.value as FamilyAuthor | '')
+                            }
+                            className="h-11 min-w-[96px] rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+                          >
+                            <option value="">작성자</option>
+                            {FAMILY_AUTHORS.map((member) => (
+                              <option key={member} value={member}>
+                                {member}
+                              </option>
+                            ))}
+                          </select>
 
-                        <textarea
-                          value={editContent}
-                          onChange={(event) => setEditContent(event.target.value)}
-                          maxLength={FAMILY_FEED_MAX_LENGTH}
-                          rows={2}
-                          className="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-violet-400"
-                        />
+                          <textarea
+                            value={editContent}
+                            onChange={(event) => setEditContent(event.target.value)}
+                            maxLength={FAMILY_FEED_MAX_LENGTH}
+                            rows={1}
+                            className="h-11 min-h-[44px] flex-1 resize-none rounded-full border border-slate-200 bg-white px-4 py-3 text-sm leading-5 text-slate-900 outline-none focus:border-violet-400"
+                          />
+                        </div>
 
                         <div className="mt-3 flex items-center justify-between gap-3">
-                          <span className="text-xs text-slate-500">
-                            남은 글자 수 · {editRemainingLength}
-                          </span>
+                          <span className="text-xs text-slate-500">{editRemainingLength}</span>
 
                           <div className="flex items-center gap-3">
                             <button
@@ -442,7 +441,7 @@ export default function FamilyFeedSection({
 
       {!readOnly && fixedComposer ? (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur">
-          <div className="mx-auto w-full max-w-3xl px-4 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3">
+          <div className="mx-auto w-full max-w-3xl px-4 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3">
             {composer}
           </div>
         </div>

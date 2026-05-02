@@ -10,7 +10,7 @@ export default function HomePage() {
   const todayDateKey = getTodayDateKey();
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-36 pt-4 sm:px-6">
+    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-32 pt-4 sm:px-6">
       <header className="mb-4">
         <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">
           감사나눔
