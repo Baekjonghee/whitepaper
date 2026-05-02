@@ -1,10 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f2e8;
-  --foreground: #1f2937;
-  --card: rgba(255, 255, 255, 0.78);
-  --line: rgba(255, 255, 255, 0.4);
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 * {
@@ -19,11 +17,9 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--foreground);
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.55), transparent 38%),
-    linear-gradient(180deg, #fff9ee 0%, #f4ebd8 48%, #ece9df 100%);
+  background: var(--background);
 }
 
 ::selection {
-  background: rgba(153, 123, 92, 0.22);
+  background: rgba(124, 58, 237, 0.16);
 }
