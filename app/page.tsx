@@ -12,9 +12,7 @@ export default function HomePage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-32 pt-4 sm:px-6">
       <header className="mb-4">
-        <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">
-          감사나눔
-        </p>
+        <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">감사나눔</p>
       </header>
 
       <TopTabs />
@@ -24,11 +22,7 @@ export default function HomePage() {
       </section>
 
       <section className="mt-5">
-        <FamilyFeedSection
-          dateKey={todayDateKey}
-          title="오늘의 감사 나눔"
-          fixedComposer
-        />
+        <FamilyFeedSection dateKey={todayDateKey} title="오늘의 감사 나눔" fixedComposer />
       </section>
     </main>
   );
