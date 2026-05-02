@@ -135,9 +135,7 @@ export default function FamilyFeedSection({
       } catch (loadError) {
         if (!ignore) {
           setError(
-            loadError instanceof Error
-              ? loadError.message
-              : '감사 나눔을 불러오지 못했습니다.',
+            loadError instanceof Error ? loadError.message : '감사 나눔을 불러오지 못했습니다.',
           );
         }
       } finally {
@@ -154,11 +152,7 @@ export default function FamilyFeedSection({
     };
   }, [dateKey]);
 
-  const remainingLength = useMemo(
-    () => FAMILY_FEED_MAX_LENGTH - content.length,
-    [content.length],
-  );
-
+  const remainingLength = useMemo(() => FAMILY_FEED_MAX_LENGTH - content.length, [content.length]);
   const editRemainingLength = useMemo(
     () => FAMILY_FEED_MAX_LENGTH - editContent.length,
     [editContent.length],
@@ -176,20 +170,13 @@ export default function FamilyFeedSection({
     setIsSubmitting(true);
 
     try {
-      const item = await createFamilyFeed({
-        dateKey,
-        author,
-        content,
-      });
-
+      const item = await createFamilyFeed({ dateKey, author, content });
       setFeeds((previous) => [item, ...previous]);
       setAuthor('');
       setContent('');
     } catch (submitError) {
       setError(
-        submitError instanceof Error
-          ? submitError.message
-          : '감사 나눔을 저장하지 못했습니다.',
+        submitError instanceof Error ? submitError.message : '감사 나눔을 저장하지 못했습니다.',
       );
     } finally {
       setIsSubmitting(false);
@@ -220,15 +207,11 @@ export default function FamilyFeedSection({
         content: editContent,
       });
 
-      setFeeds((previous) =>
-        previous.map((feed) => (feed.id === feedId ? updatedItem : feed)),
-      );
+      setFeeds((previous) => previous.map((feed) => (feed.id === feedId ? updatedItem : feed)));
       cancelEditing();
     } catch (updateError) {
       setError(
-        updateError instanceof Error
-          ? updateError.message
-          : '감사 나눔을 수정하지 못했습니다.',
+        updateError instanceof Error ? updateError.message : '감사 나눔을 수정하지 못했습니다.',
       );
     } finally {
       setIsUpdating(false);
@@ -237,10 +220,7 @@ export default function FamilyFeedSection({
 
   const handleDelete = async (feedId: string) => {
     const confirmed = window.confirm('이 나눔글을 삭제할까요?');
-
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     setError('');
     setDeletingId(feedId);
@@ -248,15 +228,10 @@ export default function FamilyFeedSection({
     try {
       await deleteFamilyFeed(feedId);
       setFeeds((previous) => previous.filter((feed) => feed.id !== feedId));
-
-      if (editingId === feedId) {
-        cancelEditing();
-      }
+      if (editingId === feedId) cancelEditing();
     } catch (deleteError) {
       setError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : '감사 나눔을 삭제하지 못했습니다.',
+        deleteError instanceof Error ? deleteError.message : '감사 나눔을 삭제하지 못했습니다.',
       );
     } finally {
       setDeletingId(null);
@@ -265,11 +240,11 @@ export default function FamilyFeedSection({
 
   const composer = !readOnly ? (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <div className="flex items-end gap-2">
+      <div className="flex items-center gap-2 rounded-[22px] border border-slate-200 bg-white px-2 py-2 shadow-sm">
         <select
           value={author}
           onChange={(event) => setAuthor(event.target.value as FamilyAuthor | '')}
-          className="h-11 min-w-[96px] rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+          className="h-9 min-w-[88px] rounded-full bg-slate-100 px-3 text-sm text-slate-900 outline-none"
         >
           <option value="">작성자</option>
           {FAMILY_AUTHORS.map((member) => (
@@ -284,28 +259,24 @@ export default function FamilyFeedSection({
           onChange={(event) => setContent(event.target.value)}
           maxLength={FAMILY_FEED_MAX_LENGTH}
           rows={1}
-          placeholder="감사한 일이나 기도제목을 남겨보세요."
-          className="h-11 min-h-[44px] flex-1 resize-none rounded-full border border-slate-200 bg-white px-4 py-3 text-sm leading-5 text-slate-900 outline-none focus:border-violet-400"
+          placeholder="메시지를 입력하세요"
+          className="h-9 min-h-[36px] flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-5 text-slate-900 outline-none"
         />
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="h-11 shrink-0 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-9 shrink-0 rounded-full bg-violet-600 px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? '저장 중...' : '올리기'}
+          {isSubmitting ? '...' : '전송'}
         </button>
       </div>
 
       <div className="flex items-center justify-between gap-3 px-1 text-xs">
-        <div className="text-slate-500">{remainingLength}</div>
+        <div className="text-slate-400">{remainingLength}</div>
         <div className="flex items-center gap-3">
           {error ? <span className="text-rose-600">{error}</span> : null}
-          <button
-            type="button"
-            onClick={handleReset}
-            className="font-medium text-slate-500"
-          >
+          <button type="button" onClick={handleReset} className="font-medium text-slate-500">
             취소
           </button>
         </div>
@@ -340,10 +311,7 @@ export default function FamilyFeedSection({
                 const isEditing = editingId === feed.id;
 
                 return (
-                  <article
-                    key={feed.id}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4"
-                  >
+                  <article key={feed.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
@@ -377,13 +345,11 @@ export default function FamilyFeedSection({
 
                     {isEditing ? (
                       <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
-                        <div className="flex items-end gap-2">
+                        <div className="flex items-center gap-2 rounded-[22px] border border-slate-200 bg-white px-2 py-2">
                           <select
                             value={editAuthor}
-                            onChange={(event) =>
-                              setEditAuthor(event.target.value as FamilyAuthor | '')
-                            }
-                            className="h-11 min-w-[96px] rounded-full border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+                            onChange={(event) => setEditAuthor(event.target.value as FamilyAuthor | '')}
+                            className="h-9 min-w-[88px] rounded-full bg-slate-100 px-3 text-sm text-slate-900 outline-none"
                           >
                             <option value="">작성자</option>
                             {FAMILY_AUTHORS.map((member) => (
@@ -398,19 +364,14 @@ export default function FamilyFeedSection({
                             onChange={(event) => setEditContent(event.target.value)}
                             maxLength={FAMILY_FEED_MAX_LENGTH}
                             rows={1}
-                            className="h-11 min-h-[44px] flex-1 resize-none rounded-full border border-slate-200 bg-white px-4 py-3 text-sm leading-5 text-slate-900 outline-none focus:border-violet-400"
+                            className="h-9 min-h-[36px] flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-5 text-slate-900 outline-none"
                           />
                         </div>
 
                         <div className="mt-3 flex items-center justify-between gap-3">
                           <span className="text-xs text-slate-500">{editRemainingLength}</span>
-
                           <div className="flex items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={cancelEditing}
-                              className="text-sm font-medium text-slate-500"
-                            >
+                            <button type="button" onClick={cancelEditing} className="text-sm font-medium text-slate-500">
                               취소
                             </button>
                             <button
@@ -425,9 +386,7 @@ export default function FamilyFeedSection({
                         </div>
                       </div>
                     ) : (
-                      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-800">
-                        {feed.content}
-                      </p>
+                      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-800">{feed.content}</p>
                     )}
                   </article>
                 );

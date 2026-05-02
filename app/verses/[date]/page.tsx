@@ -14,9 +14,7 @@ type VerseDetailPageProps = {
   }>;
 };
 
-export default async function VerseDetailPage({
-  params,
-}: VerseDetailPageProps) {
+export default async function VerseDetailPage({ params }: VerseDetailPageProps) {
   const { date } = await params;
 
   if (!isValidDateKey(date)) {
@@ -28,25 +26,18 @@ export default async function VerseDetailPage({
   const dateLabel = formatDateKey(date);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-10 pt-4 sm:px-6">
-      <header className="mb-4">
-        <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">
-          감사나눔
-        </p>
+    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-8 pt-4 sm:px-6">
+      <header className="mb-3">
+        <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">감사나눔</p>
       </header>
 
       <TopTabs />
 
-      <section className="mt-5">
-        <ScriptureCard
-          verse={verse}
-          dateLabel={dateLabel}
-          background={background}
-          compact
-        />
+      <section className="mt-4">
+        <ScriptureCard verse={verse} dateLabel={dateLabel} background={background} compact />
       </section>
 
-      <section className="mt-5">
+      <section className="mt-4">
         <FamilyFeedSection dateKey={date} readOnly title="감사 나눔" fixedComposer={false} />
       </section>
     </main>
