@@ -32,20 +32,20 @@ export default async function VerseDetailPage({
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold tracking-[0.08em] text-amber-900">
-            말씀나눔
+          <p className="text-sm font-semibold tracking-[0.08em] text-violet-600">
+            감사나눔
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">
-            지난 말씀 상세
+            일자별 기록
           </h1>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/card"
+            href="/archive"
             className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5"
           >
-            오늘의 말씀
+            기록 보기
           </Link>
           <Link
             href="/"
@@ -64,7 +64,7 @@ export default async function VerseDetailPage({
       />
 
       <section className="mt-8">
-        <FamilyFeedSection dateKey={date} readOnly />
+        <FamilyFeedSection dateKey={date} readOnly title="감사 나눔" />
       </section>
     </main>
   );

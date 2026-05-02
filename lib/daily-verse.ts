@@ -100,3 +100,22 @@ export async function getPastVerseSummaries(days: number = 7) {
     };
   }).filter((item): item is NonNullable<typeof item> => item !== null);
 }
+
+export async function getDateArchiveSummaries() {
+  const verses = await getAllDailyVerses();
+  const todayKey = getTodayDateKey();
+  const todayDate = parseDateKey(todayKey);
+  const launchDate = parseDateKey(APP_LAUNCH_DATE_KEY);
+  const dayCount = Math.floor((todayDate.getTime() - launchDate.getTime()) / ONE_DAY_MS) + 1;
+
+  return Array.from({ length: dayCount }, (_, index) => {
+    const targetDate = new Date(todayDate.getTime() - index * ONE_DAY_MS);
+    const dateKey = getSeoulDateKey(targetDate);
+
+    return {
+      dateKey,
+      dateLabel: formatDateKey(dateKey),
+      verse: pickVerse(dateKey, verses),
+    };
+  });
+}
